@@ -1,10 +1,482 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>For Dani 💖</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dino Love Game 💚</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Arial";}
+
+body{
+  min-height:100vh;
+  overflow:hidden;
+  background:linear-gradient(180deg,#efffea 0%,#d4f4cf 45%,#aee3b0 100%);
+  color:#24523a;
+}
+
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+
+.sun{
+  position:absolute;top:40px;right:60px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,#fff7a3 0%,#ffe17a 45%,transparent 72%);
+  animation:pulse 4s infinite;
+}
+
+.cloud{
+  position:absolute;width:170px;height:55px;
+  background:rgba(255,255,255,0.8);
+  border-radius:999px;
+  animation:cloudMove linear infinite;
+}
+
+.cloud::before,.cloud::after{
+  content:"";position:absolute;background:rgba(255,255,255,0.8);border-radius:50%;
+}
+
+.cloud::before{width:60px;height:60px;top:-18px;left:18px;}
+.cloud::after{width:72px;height:72px;top:-28px;right:18px;}
+
+.c1{top:65px;left:-180px;animation-duration:24s;}
+.c2{top:130px;left:-230px;transform:scale(.85);animation-duration:31s;}
+.c3{top:28px;left:-260px;transform:scale(.65);animation-duration:36s;}
+
+.grass{
+  position:absolute;bottom:0;height:130px;width:100%;
+  background:linear-gradient(to top,#4fb36b,#7fd995);
+}
+
+.wrapper{
+  position:relative;z-index:2;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+
+.card{
+  width:min(92vw,760px);
+  background:rgba(255,255,255,.32);
+  border:1px solid rgba(255,255,255,.45);
+  backdrop-filter:blur(14px);
+  border-radius:30px;
+  padding:34px 22px;
+  text-align:center;
+  box-shadow:0 18px 45px rgba(41,104,64,.16);
+  animation:floatCard 4s infinite;
+  position:relative;
+}
+
+.hidden{display:none;}
+
+.big{font-size:68px;margin-bottom:10px;animation:bounce 2s infinite;}
+
+h1,h2{
+  color:#2e7b4d;
+  margin-bottom:12px;
+}
+
+p{
+  margin-top:12px;
+  line-height:1.7;
+  font-size:17px;
+}
+
+.highlight{
+  color:#167741;
+  font-weight:bold;
+  font-size:21px;
+}
+
+button{
+  border:none;border-radius:999px;
+  background:#2d8d56;color:white;
+  padding:13px 22px;cursor:pointer;
+  transition:transform .2s ease, opacity .2s ease;
+}
+
+button:hover{transform:scale(1.05);}
+
+.secondary{background:#63ac77;}
+
+input{
+  width:100%;max-width:420px;
+  padding:14px;border-radius:999px;border:none;
+  margin:10px 0;text-align:center;
+}
+
+.btn-row{
+  margin-top:20px;
+  display:flex;gap:10px;justify-content:center;
+  position:relative;
+  flex-wrap:wrap;
+}
+
+.extra-row{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+/* HEART */
+.heart-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:20px;
+}
+
+.heart-card{
+  padding:20px;
+  background:white;
+  border-radius:20px;
+  font-size:30px;
+  cursor:pointer;
+  transition:transform .2s ease, background .2s ease;
+}
+
+.heart-card:hover{
+  transform:translateY(-4px) scale(1.03);
+  background:#f8fff8;
+}
+
+.floaty{
+  position:absolute;bottom:-40px;
+  animation:floatUp linear forwards;
+}
+
+.burst{
+  position:absolute;
+  animation:burstUp 1.4s ease-out forwards;
+  pointer-events:none;
+  z-index:5;
+}
+
+.loading{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  background:linear-gradient(180deg,#efffea 0%,#d4f4cf 45%,#aee3b0 100%);
+  transition:opacity .6s ease, visibility .6s ease;
+}
+
+.loading.hide{
+  opacity:0;
+  visibility:hidden;
+}
+
+.loading-dino{
+  font-size:70px;
+  animation:bounce 1.2s infinite;
+}
+
+.loading-bar{
+  width:220px;
+  height:12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.5);
+  overflow:hidden;
+}
+
+.loading-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#72cf8f,#2d8d56);
+  border-radius:999px;
+  animation:loadBar 2s forwards;
+}
+
+.cursor{
+  display:inline-block;
+  animation:blink .8s infinite;
+  font-weight:bold;
+}
+
+/* ANIMATIONS */
+@keyframes floatCard{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+@keyframes cloudMove{
+  from{transform:translateX(0)}
+  to{transform:translateX(140vw)}
+}
+@keyframes floatUp{
+  0%{opacity:0;transform:translateY(0) rotate(0deg)}
+  100%{transform:translateY(-120vh) rotate(360deg);opacity:1}
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+@keyframes loadBar{
+  from{width:0%}
+  to{width:100%}
+}
+@keyframes burstUp{
+  0%{transform:translateY(0) scale(.8);opacity:1}
+  100%{transform:translateY(-160px) scale(1.4) rotate(20deg);opacity:0}
+}
+@keyframes blink{
+  0%,50%{opacity:1}
+  51%,100%{opacity:0}
+}
+</style>
 </head>
-<body style="text-align:center; margin-top:50px;">
-  <h1>Hello Dani ❤️</h1>
-  <p>This is my website 💕</p>
+
+<body>
+
+<div class="loading" id="loadingScreen">
+  <div class="loading-dino">🦕</div>
+  <h2>preparing something cute...</h2>
+  <div class="loading-bar">
+    <div class="loading-fill"></div>
+  </div>
+</div>
+
+<div class="bg">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="grass"></div>
+</div>
+
+<button id="musicBtn">🎵</button>
+
+<audio id="music" loop>
+  <source src="hmm.mp3" type="audio/mpeg">
+</audio>
+
+<div class="wrapper">
+
+<!-- START -->
+<div class="card" id="welcome">
+  <div class="big">🦕</div>
+  <h1>welcome, my beautiful bebii</h1>
+  <input id="nameInput" placeholder="enter your name">
+  <button id="startBtn">start</button>
+</div>
+
+<!-- GAME -->
+<div class="card hidden" id="game">
+  <h2 id="gameTitle">pick a heart</h2>
+
+  <div class="heart-grid">
+    <div class="heart-card">💚</div>
+    <div class="heart-card">💚</div>
+    <div class="heart-card" id="realHeart">💚</div>
+    <div class="heart-card">💚</div>
+    <div class="heart-card">💚</div>
+    <div class="heart-card">💚</div>
+  </div>
+
+  <p id="gameNote">choose carefullyyyy</p>
+</div>
+
+<!-- LETTER -->
+<div class="card hidden" id="letterPage">
+  <div class="big">🦖</div>
+  <h2 id="letterGreeting">hi pretty,</h2>
+
+  <p id="line1"></p>
+  <p class="highlight hidden" id="line2">i really, really like you 💚</p>
+  <p class="hidden" id="line3">and honestly you're effortlessly beautiful.</p>
+
+  <div class="btn-row">
+    <button id="nextBtn">next </button>
+  </div>
+</div>
+
+<!-- QUESTION -->
+<div class="card hidden" id="questionPage">
+  <h2>do you like me too??</h2>
+
+  <div class="btn-row">
+    <button id="yesBtn">YES 💚</button>
+    <button id="noBtn" class="secondary">NO 🥹</button>
+  </div>
+</div>
+
+<!-- YES -->
+<div class="card hidden" id="yesPage">
+  <div class="big">💚</div>
+  <h2>YEYYY 💚</h2>
+  <p>you made me really happy bebiii 🥹</p>
+
+  <div class="extra-row">
+    <button id="celebrateBtn">cutiee</button>
+    <button id="restartBtn" class="secondary">play again ♡</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
+const startBtn = document.getElementById("startBtn");
+const nameInput = document.getElementById("nameInput");
+const gameTitle = document.getElementById("gameTitle");
+const gameNote = document.getElementById("gameNote");
+const realHeart = document.getElementById("realHeart");
+const letterGreeting = document.getElementById("letterGreeting");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const nextBtn = document.getElementById("nextBtn");
+const line1 = document.getElementById("line1");
+const line2 = document.getElementById("line2");
+const line3 = document.getElementById("line3");
+const celebrateBtn = document.getElementById("celebrateBtn");
+const restartBtn = document.getElementById("restartBtn");
+const loadingScreen = document.getElementById("loadingScreen");
+
+const welcome = document.getElementById("welcome");
+const game = document.getElementById("game");
+const letterPage = document.getElementById("letterPage");
+const questionPage = document.getElementById("questionPage");
+const yesPage = document.getElementById("yesPage");
+
+setTimeout(() => {
+  loadingScreen.classList.add("hide");
+}, 2200);
+
+musicBtn.onclick = () => {
+  if (music.paused) music.play().catch(() => {});
+  else music.pause();
+};
+
+function makeBurst(count = 16) {
+  const items = ["💚","✨","🦕","🌸","🎀"];
+  for (let i = 0; i < count; i++) {
+    const e = document.createElement("div");
+    e.className = "burst";
+    e.innerText = items[Math.floor(Math.random() * items.length)];
+    e.style.left = Math.random() * 100 + "vw";
+    e.style.bottom = Math.random() * 35 + "vh";
+    e.style.fontSize = (Math.random() * 18 + 18) + "px";
+    document.body.appendChild(e);
+    setTimeout(() => e.remove(), 1500);
+  }
+}
+
+function typeLine(text, element, speed = 35) {
+  let i = 0;
+  element.innerHTML = "";
+  const typing = setInterval(() => {
+    if (i < text.length) {
+      element.innerHTML = text.slice(0, i + 1) + '<span class="cursor">|</span>';
+      i++;
+    } else {
+      clearInterval(typing);
+      element.textContent = text;
+    }
+  }, speed);
+}
+
+startBtn.onclick = () => {
+  music.play().catch(() => {});
+
+  const name = nameInput.value.trim();
+  gameTitle.innerText = name ? `pick a heart, ${name}` : "pick a heart";
+
+  welcome.classList.add("hidden");
+  game.classList.remove("hidden");
+  makeBurst(10);
+};
+
+document.querySelectorAll(".heart-card").forEach(h => {
+  if (h.id !== "realHeart") {
+    h.onclick = () => {
+      gameNote.innerText = "almost, try again";
+      makeBurst(6);
+    };
+  }
+});
+
+realHeart.onclick = () => {
+  const name = nameInput.value.trim();
+  letterGreeting.innerText = name ? `hi ${name}` : "hi cutie";
+
+  game.classList.add("hidden");
+  letterPage.classList.remove("hidden");
+
+  typeLine("bebi, i made this little website because i wanted to tell you something special.", line1);
+  makeBurst(14);
+};
+
+yesBtn.onclick = () => {
+  questionPage.classList.add("hidden");
+  yesPage.classList.remove("hidden");
+  makeBurst(25);
+};
+
+noBtn.onmouseover = () => {
+  noBtn.style.position = "absolute";
+  noBtn.style.left = Math.random() * 200 + "px";
+  noBtn.style.top = Math.random() * 100 + "px";
+};
+
+let step = 1;
+
+nextBtn.onclick = () => {
+  if (step === 1) {
+    line2.classList.remove("hidden");
+    makeBurst(10);
+    step = 2;
+  } else if (step === 2) {
+    line3.classList.remove("hidden");
+    makeBurst(10);
+    step = 3;
+  } else {
+    letterPage.classList.add("hidden");
+    questionPage.classList.remove("hidden");
+  }
+};
+
+celebrateBtn.onclick = () => {
+  makeBurst(30);
+};
+
+restartBtn.onclick = () => {
+  yesPage.classList.add("hidden");
+  welcome.classList.remove("hidden");
+  game.classList.add("hidden");
+  letterPage.classList.add("hidden");
+  questionPage.classList.add("hidden");
+  line2.classList.add("hidden");
+  line3.classList.add("hidden");
+  line1.textContent = "";
+  gameNote.textContent = "choose carefullyyyy";
+  noBtn.style.position = "static";
+  noBtn.style.left = "";
+  noBtn.style.top = "";
+  step = 1;
+};
+
+/* FLOAT */
+const items = ["💚","✨","🦕","🌸","🎀"];
+setInterval(() => {
+  const e = document.createElement("div");
+  e.className = "floaty";
+  e.innerText = items[Math.floor(Math.random() * items.length)];
+  e.style.left = Math.random() * 100 + "vw";
+  e.style.fontSize = Math.random() * 20 + 20 + "px";
+  e.style.animationDuration = (Math.random() * 4 + 5) + "s";
+  document.body.appendChild(e);
+  setTimeout(() => e.remove(), 8000);
+}, 400);
+</script>
+
 </body>
 </html>
